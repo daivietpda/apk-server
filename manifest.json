@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T10:39:08.722241Z",
+  "generatedAt": "2026-07-24T10:45:33.326959Z",
   "version": 1,
   "packages": [
     {
@@ -59,11 +59,11 @@
     {
       "name": "Xplore",
       "packageName": "com.lonelycatgames.Xplore",
-      "versionCode": 42004,
+      "versionCode": 42117,
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/Xplore.apk",
-      "sha256": "e1ed44adb0ad17528083add3a21b0a8ead36caf030defbd0d4634541d285b29b",
-      "size": 7329802
+      "sha256": "3b3f6cd034fc8582f1e190d02074cb07f19cc5fcdab92970240501534c1feb08",
+      "size": 7972492
     }
   ]
 }
