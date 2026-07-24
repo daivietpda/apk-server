@@ -17,16 +17,6 @@
       "forceInstall": true
     },
     {
-      "file": "iMediaTV.apk",
-      "packageName": "",
-      "forceInstall": false
-    },
-    {
-      "file": "SimpMusic-full-armeabi-v7a-release.apk",
-      "packageName": "",
-      "forceInstall": false
-    },
-    {
       "file": "smarttube_stable.apk",
       "packageName": "",
       "forceInstall": false

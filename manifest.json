@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T11:42:06.030675Z",
+  "generatedAt": "2026-07-24T13:40:04.721500Z",
   "version": 1,
   "packages": [
     {
@@ -31,26 +31,6 @@
       "url": "https://daivietpda.github.io/apk-server/apk/downloader.apk",
       "sha256": "e2337dbdf9049a7922ce1c9f9dc81c4c1bf5b6b0d1e76c1adfdcca77835e7c2b",
       "size": 5422893
-    },
-    {
-      "name": "iMediaTV",
-      "packageName": "com.kt.apps.media.xemtv.beta",
-      "versionCode": 25042101,
-      "format": "apk",
-      "forceInstall": false,
-      "url": "https://daivietpda.github.io/apk-server/apk/iMediaTV.apk",
-      "sha256": "680a89f9da4e84aed3a7c1e8e01dc385abbde0d66fb03efe0444cf19cc860962",
-      "size": 21032715
-    },
-    {
-      "name": "SimpMusic-full-armeabi-v7a-release",
-      "packageName": "com.maxrave.simpmusic",
-      "versionCode": 55,
-      "format": "apk",
-      "forceInstall": false,
-      "url": "https://daivietpda.github.io/apk-server/apk/SimpMusic-full-armeabi-v7a-release.apk",
-      "sha256": "1e86bc893438190ef168516bd09e3bc1f5ba203356188026b3a59a089aa772e0",
-      "size": 26674916
     },
     {
       "name": "smarttube_stable",
