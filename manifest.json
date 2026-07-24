@@ -1,10 +1,11 @@
 {
-  "generatedAt": "2026-07-24T06:55:31.824757Z",
+  "generatedAt": "2026-07-24T10:22:53.263759Z",
   "version": 1,
   "packages": [
     {
       "name": "AptoideTV-5.0.2",
-      "packageName": "",
+      "packageName": "cm.aptoidetv.pt",
+      "versionCode": 522,
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/AptoideTV-5.0.2.apk",
       "sha256": "ad84ea7cd125bc319c76ea4315403eef2914ed5ea5eb6a42a6a8c58cf1d2a0ba",
@@ -12,7 +13,8 @@
     },
     {
       "name": "cobalt",
-      "packageName": "",
+      "packageName": "com.google.android.youtube.tv",
+      "versionCode": 1,
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/cobalt.apk",
       "sha256": "46ee3adb5cbac54b1497cd96fdcfb54e7069a53a3998abebbc9fe8c3caceec29",
@@ -21,6 +23,7 @@
     {
       "name": "downloader",
       "packageName": "com.esaba.downloader",
+      "versionCode": 52,
       "forceInstall": true,
       "url": "https://daivietpda.github.io/apk-server/apk/downloader.apk",
       "sha256": "e2337dbdf9049a7922ce1c9f9dc81c4c1bf5b6b0d1e76c1adfdcca77835e7c2b",
@@ -28,7 +31,8 @@
     },
     {
       "name": "iMediaTV",
-      "packageName": "",
+      "packageName": "com.kt.apps.media.xemtv.beta",
+      "versionCode": 25042101,
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/iMediaTV.apk",
       "sha256": "680a89f9da4e84aed3a7c1e8e01dc385abbde0d66fb03efe0444cf19cc860962",
@@ -36,7 +40,8 @@
     },
     {
       "name": "SimpMusic-full-armeabi-v7a-release",
-      "packageName": "",
+      "packageName": "com.maxrave.simpmusic",
+      "versionCode": 55,
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/SimpMusic-full-armeabi-v7a-release.apk",
       "sha256": "1e86bc893438190ef168516bd09e3bc1f5ba203356188026b3a59a089aa772e0",
@@ -44,7 +49,8 @@
     },
     {
       "name": "smarttube_stable",
-      "packageName": "",
+      "packageName": "org.smarttube.stable",
+      "versionCode": 2384,
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/smarttube_stable.apk",
       "sha256": "a56d1685b4fce55b47a58ecc8dae485cd1c183e60ff47cdab398ce4a0ae86f18",
@@ -52,7 +58,8 @@
     },
     {
       "name": "Xplore",
-      "packageName": "",
+      "packageName": "com.lonelycatgames.Xplore",
+      "versionCode": 42004,
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/Xplore.apk",
       "sha256": "e1ed44adb0ad17528083add3a21b0a8ead36caf030defbd0d4634541d285b29b",
