@@ -78,11 +78,14 @@ jobs:
           FORCE_INSTALL="${FORCE_INSTALL:-unchanged}"
 
           args=(--base-url "https://daivietpda.github.io/apk-server/apk" --aapt2 "$AAPT2")
-          if [[ -n "$APK_FILE" && "$FORCE_INSTALL" != "unchanged" ]]; then
+          if [[ "$FORCE_INSTALL" != "unchanged" ]]; then
+            if [[ -z "$APK_FILE" ]]; then
+              echo "apk_file is required when force_install is true or false" >&2
+              exit 2
+            fi
             args+=(--set-apk "$APK_FILE" --package-name "$PACKAGE_NAME" --force-install "$FORCE_INSTALL")
-          elif [[ -n "$APK_FILE" || "$FORCE_INSTALL" != "unchanged" ]]; then
-            echo "apk_file and force_install must be supplied together" >&2
-            exit 2
+          elif [[ -n "$APK_FILE" ]]; then
+            echo "Rebuilding $APK_FILE without changing its forceInstall policy"
           fi
           python scripts/update_manifest.py "${args[@]}"
 
