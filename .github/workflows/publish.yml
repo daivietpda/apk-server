@@ -103,7 +103,8 @@ jobs:
         run: |
           mkdir -p public/apk
           cp manifest.json public/manifest.json
-          cp apk/*.apk public/apk/
+          find apk -maxdepth 1 -type f \( -iname '*.apk' -o -iname '*.zip' \) \
+            -exec cp '{}' public/apk/ \;
           touch public/.nojekyll
 
       - name: Commit generated policy and manifest

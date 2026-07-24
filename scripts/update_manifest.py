@@ -4,6 +4,8 @@ import hashlib
 import json
 import re
 import subprocess
+import tempfile
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
@@ -56,6 +58,46 @@ def apk_metadata(aapt2, path):
     return match.group(1), int(match.group(2))
 
 
+def package_metadata(aapt2, path):
+    if path.suffix.lower() == ".apk":
+        package_name, version_code = apk_metadata(aapt2, path)
+        return "apk", package_name, version_code
+
+    with zipfile.ZipFile(path) as archive:
+        entries = archive.infolist()
+        names = [item.filename for item in entries if not item.is_dir()]
+        if "base.apk" not in names:
+            raise SystemExit(f"Split ZIP must contain base.apk: {path.name}")
+        if any(
+            "/" in name or "\\" in name or name in (".", "..")
+            for name in names
+        ):
+            raise SystemExit(f"Split ZIP entries must be flat filenames: {path.name}")
+        apk_names = sorted(name for name in names if name.endswith(".apk"))
+        if len(apk_names) != len(names):
+            raise SystemExit(
+                f"Split ZIP may contain lowercase .apk files only: {path.name}"
+            )
+        if len(apk_names) > 64:
+            raise SystemExit(f"Split ZIP contains too many APK files: {path.name}")
+        if sum(item.file_size for item in entries) > 1024 * 1024 * 1024:
+            raise SystemExit(f"Split ZIP expands beyond 1 GiB: {path.name}")
+
+        with tempfile.TemporaryDirectory() as temporary:
+            extracted = Path(temporary)
+            archive.extractall(extracted)
+            metadata = [apk_metadata(aapt2, extracted / name) for name in apk_names]
+
+    package_name, version_code = metadata[0]
+    for split_name, (split_package, split_version) in zip(apk_names, metadata):
+        if split_package != package_name or split_version != version_code:
+            raise SystemExit(
+                f"Split metadata mismatch in {path.name}/{split_name}: "
+                f"{split_package}@{split_version}, expected {package_name}@{version_code}"
+            )
+    return "splitZip", package_name, version_code
+
+
 def atomic_json(path, value):
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
@@ -73,15 +115,18 @@ def main():
     parser.add_argument("--aapt2", default="aapt2", help="Path to Android aapt2")
     args = parser.parse_args()
 
-    apk_files = sorted(APK_DIR.glob("*.apk"), key=lambda item: item.name.lower())
+    apk_files = sorted(
+        [item for item in APK_DIR.iterdir() if item.suffix.lower() in (".apk", ".zip")],
+        key=lambda item: item.name.lower(),
+    )
     if not apk_files:
         raise SystemExit(f"No APK files found in {APK_DIR}")
 
     policies = read_policy()
     if args.set_apk:
         selected = APK_DIR / args.set_apk
-        if not selected.is_file() or selected.suffix.lower() != ".apk":
-            raise SystemExit(f"APK does not exist: {args.set_apk}")
+        if not selected.is_file() or selected.suffix.lower() not in (".apk", ".zip"):
+            raise SystemExit(f"APK or split ZIP does not exist: {args.set_apk}")
         if args.force_install is None:
             raise SystemExit("--force-install is required with --set-apk")
         enabled = args.force_install == "true"
@@ -97,7 +142,7 @@ def main():
     base_url = args.base_url.rstrip("/")
     for apk in apk_files:
         policy = policies.get(apk.name, {"packageName": "", "forceInstall": False})
-        package_name, version_code = apk_metadata(args.aapt2, apk)
+        package_format, package_name, version_code = package_metadata(args.aapt2, apk)
         configured_package = str(policy.get("packageName", ""))
         force_install = bool(policy.get("forceInstall", False))
         if configured_package and configured_package != package_name:
@@ -114,6 +159,7 @@ def main():
             "name": apk.stem,
             "packageName": package_name,
             "versionCode": version_code,
+            "format": package_format,
             "forceInstall": force_install,
             "url": f"{base_url}/{quote(apk.name)}",
             "sha256": sha256(apk),
