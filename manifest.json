@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T10:22:53.263759Z",
+  "generatedAt": "2026-07-24T10:39:08.722241Z",
   "version": 1,
   "packages": [
     {
@@ -53,8 +53,8 @@
       "versionCode": 2384,
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/smarttube_stable.apk",
-      "sha256": "a56d1685b4fce55b47a58ecc8dae485cd1c183e60ff47cdab398ce4a0ae86f18",
-      "size": 34857511
+      "sha256": "9705f4452c52fc563b6f31f6164eb4d2007f0f611f46de28184a83e412fd908c",
+      "size": 24981437
     },
     {
       "name": "Xplore",
