@@ -59,6 +59,12 @@ jobs:
           PACKAGE_NAME: ${{ inputs.package_name }}
           FORCE_INSTALL: ${{ inputs.force_install }}
         run: |
+          # workflow_dispatch supplies defaults, but push events leave all
+          # inputs empty. Normalize them before validating the optional pair.
+          APK_FILE="${APK_FILE:-}"
+          PACKAGE_NAME="${PACKAGE_NAME:-}"
+          FORCE_INSTALL="${FORCE_INSTALL:-unchanged}"
+
           args=(--base-url "https://daivietpda.github.io/apk-server/apk")
           if [[ -n "$APK_FILE" && "$FORCE_INSTALL" != "unchanged" ]]; then
             args+=(--set-apk "$APK_FILE" --package-name "$PACKAGE_NAME" --force-install "$FORCE_INSTALL")
