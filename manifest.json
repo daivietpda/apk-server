@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T11:38:33.051611Z",
+  "generatedAt": "2026-07-24T11:42:06.030675Z",
   "version": 1,
   "packages": [
     {
@@ -67,7 +67,7 @@
       "packageName": "vn.vtv.vtvgotv",
       "versionCode": 316,
       "format": "splitZip",
-      "forceInstall": false,
+      "forceInstall": true,
       "url": "https://daivietpda.github.io/apk-server/apk/VTVgoTV.zip",
       "sha256": "6d0924de740a6f51ef9a8392087c7ccf060b62a15009b81712f67b26cc05a36e",
       "size": 36123247
