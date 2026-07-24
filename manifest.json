@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T13:40:04.721500Z",
+  "generatedAt": "2026-07-24T15:04:07.619092Z",
   "version": 1,
   "packages": [
     {
@@ -31,6 +31,16 @@
       "url": "https://daivietpda.github.io/apk-server/apk/downloader.apk",
       "sha256": "e2337dbdf9049a7922ce1c9f9dc81c4c1bf5b6b0d1e76c1adfdcca77835e7c2b",
       "size": 5422893
+    },
+    {
+      "name": "SAI-4.5",
+      "packageName": "com.aefyr.sai",
+      "versionCode": 60,
+      "format": "apk",
+      "forceInstall": false,
+      "url": "https://daivietpda.github.io/apk-server/apk/SAI-4.5.apk",
+      "sha256": "632ce65cc6cde1fb5704375b18bccffd0bfa4d476385375ab8088bc21f5f8f11",
+      "size": 5130176
     },
     {
       "name": "smarttube_stable",
