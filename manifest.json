@@ -1,54 +1,54 @@
-﻿{
-    "generatedAt":  "2026-07-24T05:49:29.1116190Z",
-    "version":  1,
-    "packages":  [
-                     {
-                         "name":  "AptoideTV-5.0.2",
-                         "packageName":  "",
-                         "forceInstall":  false,
-                         "url":  "https://apk.daivietpda.com/apk/AptoideTV-5.0.2.apk",
-                         "sha256":  "ad84ea7cd125bc319c76ea4315403eef2914ed5ea5eb6a42a6a8c58cf1d2a0ba",
-                         "size":  12127870
-                     },
-                     {
-                         "name":  "cobalt",
-                         "packageName":  "",
-                         "forceInstall":  false,
-                         "url":  "https://apk.daivietpda.com/apk/cobalt.apk",
-                         "sha256":  "46ee3adb5cbac54b1497cd96fdcfb54e7069a53a3998abebbc9fe8c3caceec29",
-                         "size":  15338330
-                     },
-                     {
-                         "name":  "downloader",
-                         "packageName":  "com.esaba.downloader",
-                         "forceInstall":  true,
-                         "url":  "https://apk.daivietpda.com/apk/downloader.apk",
-                         "sha256":  "e2337dbdf9049a7922ce1c9f9dc81c4c1bf5b6b0d1e76c1adfdcca77835e7c2b",
-                         "size":  5422893
-                     },
-                     {
-                         "name":  "iMediaTV",
-                         "packageName":  "",
-                         "forceInstall":  false,
-                         "url":  "https://apk.daivietpda.com/apk/iMediaTV.apk",
-                         "sha256":  "680a89f9da4e84aed3a7c1e8e01dc385abbde0d66fb03efe0444cf19cc860962",
-                         "size":  21032715
-                     },
-                     {
-                         "name":  "smarttube_stable",
-                         "packageName":  "",
-                         "forceInstall":  false,
-                         "url":  "https://apk.daivietpda.com/apk/smarttube_stable.apk",
-                         "sha256":  "a56d1685b4fce55b47a58ecc8dae485cd1c183e60ff47cdab398ce4a0ae86f18",
-                         "size":  34857511
-                     },
-                     {
-                         "name":  "Xplore",
-                         "packageName":  "",
-                         "forceInstall":  false,
-                         "url":  "https://apk.daivietpda.com/apk/Xplore.apk",
-                         "sha256":  "e1ed44adb0ad17528083add3a21b0a8ead36caf030defbd0d4634541d285b29b",
-                         "size":  7329802
-                     }
-                 ]
+{
+  "generatedAt": "2026-07-24T06:01:49.228921Z",
+  "version": 1,
+  "packages": [
+    {
+      "name": "AptoideTV-5.0.2",
+      "packageName": "",
+      "forceInstall": false,
+      "url": "https://daivietpda.github.io/apk-server/apk/AptoideTV-5.0.2.apk",
+      "sha256": "ad84ea7cd125bc319c76ea4315403eef2914ed5ea5eb6a42a6a8c58cf1d2a0ba",
+      "size": 12127870
+    },
+    {
+      "name": "cobalt",
+      "packageName": "",
+      "forceInstall": false,
+      "url": "https://daivietpda.github.io/apk-server/apk/cobalt.apk",
+      "sha256": "46ee3adb5cbac54b1497cd96fdcfb54e7069a53a3998abebbc9fe8c3caceec29",
+      "size": 15338330
+    },
+    {
+      "name": "downloader",
+      "packageName": "com.esaba.downloader",
+      "forceInstall": true,
+      "url": "https://daivietpda.github.io/apk-server/apk/downloader.apk",
+      "sha256": "e2337dbdf9049a7922ce1c9f9dc81c4c1bf5b6b0d1e76c1adfdcca77835e7c2b",
+      "size": 5422893
+    },
+    {
+      "name": "iMediaTV",
+      "packageName": "",
+      "forceInstall": false,
+      "url": "https://daivietpda.github.io/apk-server/apk/iMediaTV.apk",
+      "sha256": "680a89f9da4e84aed3a7c1e8e01dc385abbde0d66fb03efe0444cf19cc860962",
+      "size": 21032715
+    },
+    {
+      "name": "smarttube_stable",
+      "packageName": "",
+      "forceInstall": false,
+      "url": "https://daivietpda.github.io/apk-server/apk/smarttube_stable.apk",
+      "sha256": "a56d1685b4fce55b47a58ecc8dae485cd1c183e60ff47cdab398ce4a0ae86f18",
+      "size": 34857511
+    },
+    {
+      "name": "Xplore",
+      "packageName": "",
+      "forceInstall": false,
+      "url": "https://daivietpda.github.io/apk-server/apk/Xplore.apk",
+      "sha256": "e1ed44adb0ad17528083add3a21b0a8ead36caf030defbd0d4634541d285b29b",
+      "size": 7329802
+    }
+  ]
 }

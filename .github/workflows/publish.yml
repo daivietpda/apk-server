@@ -1,0 +1,122 @@
+name: Build manifest and publish APK server
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apk/**"
+      - "manifest-policy.json"
+      - "scripts/**"
+      - "tools/**"
+      - ".github/workflows/publish.yml"
+  workflow_dispatch:
+    inputs:
+      apk_file:
+        description: "APK filename to configure; leave empty to only rebuild"
+        required: false
+        type: string
+      package_name:
+        description: "Android packageName required when force_install=true"
+        required: false
+        type: string
+      force_install:
+        description: "Force reinstall policy"
+        required: true
+        default: unchanged
+        type: choice
+        options: [unchanged, "true", "false"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.pages.outputs.should_deploy }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Apply force-install policy and generate manifest
+        shell: bash
+        env:
+          APK_FILE: ${{ inputs.apk_file }}
+          PACKAGE_NAME: ${{ inputs.package_name }}
+          FORCE_INSTALL: ${{ inputs.force_install }}
+        run: |
+          args=(--base-url "https://daivietpda.github.io/apk-server/apk")
+          if [[ -n "$APK_FILE" && "$FORCE_INSTALL" != "unchanged" ]]; then
+            args+=(--set-apk "$APK_FILE" --package-name "$PACKAGE_NAME" --force-install "$FORCE_INSTALL")
+          elif [[ -n "$APK_FILE" || "$FORCE_INSTALL" != "unchanged" ]]; then
+            echo "apk_file and force_install must be supplied together" >&2
+            exit 2
+          fi
+          python scripts/update_manifest.py "${args[@]}"
+
+      - name: Build RemoteFetch DEX jar
+        shell: bash
+        run: |
+          mkdir -p build/classes public
+          curl --fail --location --retry 3 \
+            --output build/r8.jar \
+            https://dl.google.com/dl/android/maven2/com/android/tools/r8/9.1.31/r8-9.1.31.jar
+          javac --release 8 -d build/classes tools/RemoteFetch.java
+          jar cf build/input.jar -C build/classes RemoteFetch.class
+          java -cp build/r8.jar com.android.tools.r8.D8 \
+            --min-api 29 --output public/remote-preinstall.jar build/input.jar
+
+      - name: Prepare GitHub Pages artifact
+        shell: bash
+        run: |
+          mkdir -p public/apk
+          cp manifest.json public/manifest.json
+          cp apk/*.apk public/apk/
+          touch public/.nojekyll
+
+      - name: Commit generated policy and manifest
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json manifest-policy.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update generated APK manifest"
+            git push
+          fi
+
+      - id: pages
+        name: Check Pages availability
+        shell: bash
+        run: echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.should_deploy == 'true'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
