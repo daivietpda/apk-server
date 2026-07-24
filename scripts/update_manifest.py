@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
@@ -13,6 +14,9 @@ POLICY_PATH = ROOT / "manifest-policy.json"
 MANIFEST_PATH = ROOT / "manifest.json"
 DEFAULT_BASE_URL = "https://daivietpda.github.io/apk-server/apk"
 PACKAGE_RE = re.compile(r"^[A-Za-z0-9._]+$")
+BADGING_RE = re.compile(
+    r"^package: name='([^']+)' versionCode='([0-9]+)'", re.MULTILINE
+)
 
 
 def read_policy():
@@ -37,6 +41,21 @@ def sha256(path):
     return digest.hexdigest()
 
 
+def apk_metadata(aapt2, path):
+    result = subprocess.run(
+        [aapt2, "dump", "badging", str(path)],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    match = BADGING_RE.search(result.stdout)
+    if not match:
+        raise SystemExit(f"Cannot read packageName/versionCode from {path.name}")
+    return match.group(1), int(match.group(2))
+
+
 def atomic_json(path, value):
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
@@ -51,6 +70,7 @@ def main():
     parser.add_argument("--set-apk", help="APK filename whose policy will be changed")
     parser.add_argument("--package-name", default="")
     parser.add_argument("--force-install", choices=("true", "false"))
+    parser.add_argument("--aapt2", default="aapt2", help="Path to Android aapt2")
     args = parser.parse_args()
 
     apk_files = sorted(APK_DIR.glob("*.apk"), key=lambda item: item.name.lower())
@@ -77,18 +97,23 @@ def main():
     base_url = args.base_url.rstrip("/")
     for apk in apk_files:
         policy = policies.get(apk.name, {"packageName": "", "forceInstall": False})
-        package_name = str(policy.get("packageName", ""))
+        package_name, version_code = apk_metadata(args.aapt2, apk)
+        configured_package = str(policy.get("packageName", ""))
         force_install = bool(policy.get("forceInstall", False))
-        if force_install and not PACKAGE_RE.fullmatch(package_name):
-            raise SystemExit(f"Invalid packageName policy for {apk.name}")
+        if configured_package and configured_package != package_name:
+            raise SystemExit(
+                f"packageName policy mismatch for {apk.name}: "
+                f"configured={configured_package}, actual={package_name}"
+            )
         normalized_policies.append({
             "file": apk.name,
-            "packageName": package_name,
+            "packageName": package_name if force_install else "",
             "forceInstall": force_install,
         })
         packages.append({
             "name": apk.stem,
             "packageName": package_name,
+            "versionCode": version_code,
             "forceInstall": force_install,
             "url": f"{base_url}/{quote(apk.name)}",
             "sha256": sha256(apk),

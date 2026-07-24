@@ -52,6 +52,18 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - uses: android-actions/setup-android@v3
+
+      - name: Locate aapt2
+        shell: bash
+        run: |
+          AAPT2=$(find "$ANDROID_HOME/build-tools" -name aapt2 -type f | sort -V | tail -n 1)
+          if [[ -z "$AAPT2" ]]; then
+            sdkmanager "build-tools;35.0.0"
+            AAPT2="$ANDROID_HOME/build-tools/35.0.0/aapt2"
+          fi
+          echo "AAPT2=$AAPT2" >> "$GITHUB_ENV"
+
       - name: Apply force-install policy and generate manifest
         shell: bash
         env:
@@ -65,7 +77,7 @@ jobs:
           PACKAGE_NAME="${PACKAGE_NAME:-}"
           FORCE_INSTALL="${FORCE_INSTALL:-unchanged}"
 
-          args=(--base-url "https://daivietpda.github.io/apk-server/apk")
+          args=(--base-url "https://daivietpda.github.io/apk-server/apk" --aapt2 "$AAPT2")
           if [[ -n "$APK_FILE" && "$FORCE_INSTALL" != "unchanged" ]]; then
             args+=(--set-apk "$APK_FILE" --package-name "$PACKAGE_NAME" --force-install "$FORCE_INSTALL")
           elif [[ -n "$APK_FILE" || "$FORCE_INSTALL" != "unchanged" ]]; then
