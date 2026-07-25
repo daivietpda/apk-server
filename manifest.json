@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-25T10:36:31.947497Z",
+  "generatedAt": "2026-07-25T10:40:47.111067Z",
   "version": 2,
   "packages": [
     {
@@ -64,13 +64,6 @@
     }
   ],
   "uninstallPackages": [
-    {
-      "action": "uninstall",
-      "packageName": "com.android.vending",
-      "enforce": true,
-      "keepData": false,
-      "userId": 0
-    },
     {
       "action": "uninstall",
       "packageName": "com.maxrave.simpmusic",
