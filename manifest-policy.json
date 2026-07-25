@@ -17,11 +17,6 @@
       "forceInstall": true
     },
     {
-      "file": "SAI-4.5.apk",
-      "packageName": "",
-      "forceInstall": false
-    },
-    {
       "file": "smarttube_stable.apk",
       "packageName": "",
       "forceInstall": false
