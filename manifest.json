@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-25T08:30:41.494930Z",
+  "generatedAt": "2026-07-25T08:39:35.871399Z",
   "version": 2,
   "packages": [
     {
@@ -63,5 +63,13 @@
       "size": 7972492
     }
   ],
-  "uninstallPackages": []
+  "uninstallPackages": [
+    {
+      "action": "uninstall",
+      "packageName": "com.maxrave.simpmusic",
+      "enforce": true,
+      "keepData": false,
+      "userId": 0
+    }
+  ]
 }
