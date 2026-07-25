@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-25T03:07:25.710549Z",
-  "version": 1,
+  "generatedAt": "2026-07-25T08:29:08.678473Z",
+  "version": 2,
   "packages": [
     {
       "name": "AptoideTV-5.0.2",
@@ -62,5 +62,6 @@
       "sha256": "3b3f6cd034fc8582f1e190d02074cb07f19cc5fcdab92970240501534c1feb08",
       "size": 7972492
     }
-  ]
+  ],
+  "uninstallPackages": []
 }

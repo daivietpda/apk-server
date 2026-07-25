@@ -6,6 +6,7 @@ on:
     paths:
       - "apk/**"
       - "manifest-policy.json"
+      - "uninstall-policy.json"
       - "scripts/**"
       - "tools/**"
       - ".github/workflows/publish.yml"
@@ -25,6 +26,26 @@ on:
         default: unchanged
         type: choice
         options: [unchanged, "true", "false"]
+      uninstall_package:
+        description: "Package name to uninstall, e.g. com.example.oldapp"
+        required: false
+        type: string
+      uninstall_action:
+        description: "Remote uninstall policy"
+        required: true
+        default: unchanged
+        type: choice
+        options: [unchanged, once, enforce, remove]
+      uninstall_keep_data:
+        description: "Keep app data when uninstalling"
+        required: true
+        default: false
+        type: boolean
+      uninstall_user_id:
+        description: "Android user ID"
+        required: true
+        default: "0"
+        type: string
 
 permissions:
   contents: write
@@ -70,12 +91,20 @@ jobs:
           APK_FILE: ${{ inputs.apk_file }}
           PACKAGE_NAME: ${{ inputs.package_name }}
           FORCE_INSTALL: ${{ inputs.force_install }}
+          UNINSTALL_PACKAGE: ${{ inputs.uninstall_package }}
+          UNINSTALL_ACTION: ${{ inputs.uninstall_action }}
+          UNINSTALL_KEEP_DATA: ${{ inputs.uninstall_keep_data }}
+          UNINSTALL_USER_ID: ${{ inputs.uninstall_user_id }}
         run: |
           # workflow_dispatch supplies defaults, but push events leave all
           # inputs empty. Normalize them before validating the optional pair.
           APK_FILE="${APK_FILE:-}"
           PACKAGE_NAME="${PACKAGE_NAME:-}"
           FORCE_INSTALL="${FORCE_INSTALL:-unchanged}"
+          UNINSTALL_PACKAGE="${UNINSTALL_PACKAGE:-}"
+          UNINSTALL_ACTION="${UNINSTALL_ACTION:-unchanged}"
+          UNINSTALL_KEEP_DATA="${UNINSTALL_KEEP_DATA:-false}"
+          UNINSTALL_USER_ID="${UNINSTALL_USER_ID:-0}"
 
           args=(--base-url "https://daivietpda.github.io/apk-server/apk" --aapt2 "$AAPT2")
           if [[ "$FORCE_INSTALL" != "unchanged" ]]; then
@@ -86,6 +115,15 @@ jobs:
             args+=(--set-apk "$APK_FILE" --package-name "$PACKAGE_NAME" --force-install "$FORCE_INSTALL")
           elif [[ -n "$APK_FILE" ]]; then
             echo "Rebuilding $APK_FILE without changing its forceInstall policy"
+          fi
+          if [[ "$UNINSTALL_ACTION" != "unchanged" ]]; then
+            if [[ -z "$UNINSTALL_PACKAGE" ]]; then
+              echo "uninstall_package is required when uninstall_action is not unchanged" >&2
+              exit 2
+            fi
+            args+=(--uninstall-package "$UNINSTALL_PACKAGE" --uninstall-action "$UNINSTALL_ACTION" --uninstall-keep-data "$UNINSTALL_KEEP_DATA" --uninstall-user-id "$UNINSTALL_USER_ID")
+          elif [[ -n "$UNINSTALL_PACKAGE" ]]; then
+            echo "Ignoring uninstall_package because uninstall_action is unchanged"
           fi
           python scripts/update_manifest.py "${args[@]}"
 
@@ -115,7 +153,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add manifest.json manifest-policy.json
+          git add manifest.json manifest-policy.json uninstall-policy.json
           if ! git diff --cached --quiet; then
             git commit -m "Update generated APK manifest"
             git push

@@ -13,6 +13,7 @@ from urllib.parse import quote
 ROOT = Path(__file__).resolve().parents[1]
 APK_DIR = ROOT / "apk"
 POLICY_PATH = ROOT / "manifest-policy.json"
+UNINSTALL_POLICY_PATH = ROOT / "uninstall-policy.json"
 MANIFEST_PATH = ROOT / "manifest.json"
 DEFAULT_BASE_URL = "https://daivietpda.github.io/apk-server/apk"
 PACKAGE_RE = re.compile(r"^[A-Za-z0-9._]+$")
@@ -32,6 +33,20 @@ def read_policy():
         }
         for item in data.get("packages", [])
         if item.get("file")
+    }
+
+
+def read_uninstall_policy():
+    if not UNINSTALL_POLICY_PATH.exists():
+        return {}
+    data = json.loads(UNINSTALL_POLICY_PATH.read_text(encoding="utf-8-sig"))
+    return {
+        item["packageName"]: {
+            "enforce": bool(item.get("enforce", False)),
+            "keepData": bool(item.get("keepData", False)),
+            "userId": int(item.get("userId", 0)),
+        }
+        for item in data.get("uninstallPackages", []) if item.get("packageName")
     }
 
 
@@ -113,6 +128,10 @@ def main():
     parser.add_argument("--package-name", default="")
     parser.add_argument("--force-install", choices=("true", "false"))
     parser.add_argument("--aapt2", default="aapt2", help="Path to Android aapt2")
+    parser.add_argument("--uninstall-package", default="")
+    parser.add_argument("--uninstall-action", choices=("unchanged", "once", "enforce", "remove"), default="unchanged")
+    parser.add_argument("--uninstall-keep-data", choices=("true", "false"), default="false")
+    parser.add_argument("--uninstall-user-id", type=int, default=0)
     args = parser.parse_args()
 
     apk_files = sorted(
@@ -123,6 +142,7 @@ def main():
         raise SystemExit(f"No APK files found in {APK_DIR}")
 
     policies = read_policy()
+    uninstall_policies = read_uninstall_policy()
     if args.set_apk:
         selected = APK_DIR / args.set_apk
         if not selected.is_file() or selected.suffix.lower() not in (".apk", ".zip"):
@@ -136,6 +156,20 @@ def main():
             "packageName": args.package_name if enabled else "",
             "forceInstall": enabled,
         }
+
+    if args.uninstall_action != "unchanged":
+        if not PACKAGE_RE.fullmatch(args.uninstall_package):
+            raise SystemExit("A valid --uninstall-package is required")
+        if args.uninstall_action == "remove":
+            uninstall_policies.pop(args.uninstall_package, None)
+        else:
+            if args.uninstall_user_id < 0 or args.uninstall_user_id > 999:
+                raise SystemExit("--uninstall-user-id must be between 0 and 999")
+            uninstall_policies[args.uninstall_package] = {
+                "enforce": args.uninstall_action == "enforce",
+                "keepData": args.uninstall_keep_data == "true",
+                "userId": args.uninstall_user_id,
+            }
 
     normalized_policies = []
     packages = []
@@ -166,13 +200,35 @@ def main():
             "size": apk.stat().st_size,
         })
 
+    install_package_names = {item["packageName"] for item in packages}
+    conflicts = sorted(install_package_names.intersection(uninstall_policies))
+    if conflicts:
+        raise SystemExit("Packages cannot be installed and uninstalled together: " + ", ".join(conflicts))
+
+    normalized_uninstall = []
+    for package_name in sorted(uninstall_policies):
+        if not PACKAGE_RE.fullmatch(package_name):
+            raise SystemExit(f"Invalid uninstall packageName: {package_name}")
+        policy = uninstall_policies[package_name]
+        user_id = int(policy.get("userId", 0))
+        if user_id < 0 or user_id > 999:
+            raise SystemExit(f"Invalid uninstall userId for {package_name}: {user_id}")
+        normalized_uninstall.append({
+            "packageName": package_name,
+            "enforce": bool(policy.get("enforce", False)),
+            "keepData": bool(policy.get("keepData", False)),
+            "userId": user_id,
+        })
+
     atomic_json(POLICY_PATH, {"version": 1, "packages": normalized_policies})
+    atomic_json(UNINSTALL_POLICY_PATH, {"version": 1, "uninstallPackages": normalized_uninstall})
     atomic_json(MANIFEST_PATH, {
         "generatedAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "version": 1,
+        "version": 2,
         "packages": packages,
+        "uninstallPackages": [{"action": "uninstall", **item} for item in normalized_uninstall],
     })
-    print(f"Generated {MANIFEST_PATH} with {len(packages)} APK(s)")
+    print(f"Generated {MANIFEST_PATH} with {len(packages)} APK(s) and {len(normalized_uninstall)} uninstall rule(s)")
 
 
 if __name__ == "__main__":
