@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-25T10:40:47.111067Z",
+  "generatedAt": "2026-07-25T10:49:37.975901Z",
   "version": 2,
   "packages": [
     {
@@ -51,16 +51,6 @@
       "url": "https://daivietpda.github.io/apk-server/apk/VTVgoTV.zip",
       "sha256": "6d0924de740a6f51ef9a8392087c7ccf060b62a15009b81712f67b26cc05a36e",
       "size": 36123247
-    },
-    {
-      "name": "Xplore",
-      "packageName": "com.lonelycatgames.Xplore",
-      "versionCode": 42117,
-      "format": "apk",
-      "forceInstall": false,
-      "url": "https://daivietpda.github.io/apk-server/apk/Xplore.apk",
-      "sha256": "3b3f6cd034fc8582f1e190d02074cb07f19cc5fcdab92970240501534c1feb08",
-      "size": 7972492
     }
   ],
   "uninstallPackages": [
