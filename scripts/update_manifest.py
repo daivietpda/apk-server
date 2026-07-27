@@ -15,7 +15,7 @@ APK_DIR = ROOT / "apk"
 POLICY_PATH = ROOT / "manifest-policy.json"
 UNINSTALL_POLICY_PATH = ROOT / "uninstall-policy.json"
 MANIFEST_PATH = ROOT / "manifest.json"
-DEFAULT_BASE_URL = "https://apk.daivietpda.com/apk"
+DEFAULT_BASE_URL = "https://daivietpda.github.io/apk-server/apk"
 PACKAGE_RE = re.compile(r"^[A-Za-z0-9._]+$")
 BADGING_RE = re.compile(
     r"^package: name='([^']+)' versionCode='([0-9]+)'", re.MULTILINE
