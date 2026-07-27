@@ -6,9 +6,9 @@ Tài liệu tiếng Anh: [README.md](README.md).
 
 ## URL công khai
 
-- Manifest: `https://daivietpda.github.io/apk-server/manifest.json`
-- APK/Split ZIP: `https://daivietpda.github.io/apk-server/apk/<tên-file>`
-- DEX helper tải HTTPS: `https://daivietpda.github.io/apk-server/remote-preinstall.jar`
+- Manifest: `https://apk.daivietpda.com/manifest.json`
+- APK/Split ZIP: `https://apk.daivietpda.com/apk/<tên-file>`
+- DEX helper tải HTTPS: `https://apk.daivietpda.com/remote-preinstall.jar`
 
 ## Định dạng payload
 
@@ -41,7 +41,7 @@ Mỗi entry được sinh từ metadata thật, SHA-256 và kích thước paylo
   "versionCode": 120,
   "format": "splitZip",
   "forceInstall": false,
-  "url": "https://daivietpda.github.io/apk-server/apk/ExampleTV.zip",
+  "url": "https://apk.daivietpda.com/apk/ExampleTV.zip",
   "sha256": "...",
   "size": 12345678
 }

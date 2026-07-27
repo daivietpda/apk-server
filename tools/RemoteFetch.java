@@ -8,7 +8,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 /** Minimal HTTPS downloader used by the removable-preinstall init service. */
 public final class RemoteFetch {
-    private static final String ALLOWED_HOST = "daivietpda.github.io";
+    private static final String ALLOWED_HOST = "apk.daivietpda.com";
     private static final int MAX_REDIRECTS = 5;
 
     private static URL validateUrl(String value) throws Exception {

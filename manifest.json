@@ -8,7 +8,7 @@
       "versionCode": 522,
       "format": "apk",
       "forceInstall": false,
-      "url": "https://daivietpda.github.io/apk-server/apk/AptoideTV-5.0.2.apk",
+      "url": "https://apk.daivietpda.com/apk/AptoideTV-5.0.2.apk",
       "sha256": "ad84ea7cd125bc319c76ea4315403eef2914ed5ea5eb6a42a6a8c58cf1d2a0ba",
       "size": 12127870
     },
@@ -18,7 +18,7 @@
       "versionCode": 1,
       "format": "apk",
       "forceInstall": false,
-      "url": "https://daivietpda.github.io/apk-server/apk/cobalt.apk",
+      "url": "https://apk.daivietpda.com/apk/cobalt.apk",
       "sha256": "46ee3adb5cbac54b1497cd96fdcfb54e7069a53a3998abebbc9fe8c3caceec29",
       "size": 15338330
     },
@@ -28,7 +28,7 @@
       "versionCode": 52,
       "format": "apk",
       "forceInstall": true,
-      "url": "https://daivietpda.github.io/apk-server/apk/downloader.apk",
+      "url": "https://apk.daivietpda.com/apk/downloader.apk",
       "sha256": "e2337dbdf9049a7922ce1c9f9dc81c4c1bf5b6b0d1e76c1adfdcca77835e7c2b",
       "size": 5422893
     },
@@ -38,7 +38,7 @@
       "versionCode": 2384,
       "format": "apk",
       "forceInstall": false,
-      "url": "https://daivietpda.github.io/apk-server/apk/smarttube_stable.apk",
+      "url": "https://apk.daivietpda.com/apk/smarttube_stable.apk",
       "sha256": "9705f4452c52fc563b6f31f6164eb4d2007f0f611f46de28184a83e412fd908c",
       "size": 24981437
     },
@@ -48,7 +48,7 @@
       "versionCode": 316,
       "format": "splitZip",
       "forceInstall": true,
-      "url": "https://daivietpda.github.io/apk-server/apk/VTVgoTV.zip",
+      "url": "https://apk.daivietpda.com/apk/VTVgoTV.zip",
       "sha256": "6d0924de740a6f51ef9a8392087c7ccf060b62a15009b81712f67b26cc05a36e",
       "size": 36123247
     }

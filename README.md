@@ -6,9 +6,9 @@ Vietnamese documentation: [README.vi.md](README.vi.md).
 
 ## Published endpoints
 
-- Manifest: `https://daivietpda.github.io/apk-server/manifest.json`
-- APK/Split ZIP payloads: `https://daivietpda.github.io/apk-server/apk/<filename>`
-- Android HTTPS DEX helper: `https://daivietpda.github.io/apk-server/remote-preinstall.jar`
+- Manifest: `https://apk.daivietpda.com/manifest.json`
+- APK/Split ZIP payloads: `https://apk.daivietpda.com/apk/<filename>`
+- Android HTTPS DEX helper: `https://apk.daivietpda.com/remote-preinstall.jar`
 
 ## Supported payloads
 
@@ -41,7 +41,7 @@ Generated manifest entries contain the actual APK metadata, SHA-256 and size:
   "versionCode": 120,
   "format": "splitZip",
   "forceInstall": false,
-  "url": "https://daivietpda.github.io/apk-server/apk/ExampleTV.zip",
+  "url": "https://apk.daivietpda.com/apk/ExampleTV.zip",
   "sha256": "...",
   "size": 12345678
 }
