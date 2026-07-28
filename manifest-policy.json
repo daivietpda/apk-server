@@ -17,6 +17,11 @@
       "forceInstall": true
     },
     {
+      "file": "Launch-On-Boot.v1.4.6.apk",
+      "packageName": "",
+      "forceInstall": false
+    },
+    {
       "file": "smarttube_stable.apk",
       "packageName": "",
       "forceInstall": false

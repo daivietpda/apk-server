@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-27T13:49:03.706959Z",
+  "generatedAt": "2026-07-28T15:19:35.480525Z",
   "version": 2,
   "packages": [
     {
@@ -31,6 +31,16 @@
       "url": "https://daivietpda.github.io/apk-server/apk/downloader.apk",
       "sha256": "e2337dbdf9049a7922ce1c9f9dc81c4c1bf5b6b0d1e76c1adfdcca77835e7c2b",
       "size": 5422893
+    },
+    {
+      "name": "Launch-On-Boot.v1.4.6",
+      "packageName": "news.androidtv.launchonboot",
+      "versionCode": 146,
+      "format": "apk",
+      "forceInstall": false,
+      "url": "https://daivietpda.github.io/apk-server/apk/Launch-On-Boot.v1.4.6.apk",
+      "sha256": "4787c7a501159a5fb2c7de50c18089ed15e90132c86af54c35ddfe43f67e02b0",
+      "size": 8956968
     },
     {
       "name": "smarttube_stable",
