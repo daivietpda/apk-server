@@ -6,8 +6,10 @@ Vietnamese documentation: [README.vi.md](README.vi.md).
 
 ## Published endpoints
 
-- Manifest: `https://daivietpda.github.io/apk-server/manifest.json`
-- APK/Split ZIP payloads: `https://daivietpda.github.io/apk-server/apk/<filename>`
+- Legacy manifest: `https://daivietpda.github.io/apk-server/manifest.json`
+- Preferred manifest: `https://apk.daivietpda.com/manifest.json`
+- Legacy payloads: `https://daivietpda.github.io/apk-server/apk/<filename>`
+- Preferred payloads: `https://apk.daivietpda.com/apk/<filename>`
 - Android HTTPS DEX helper: `https://daivietpda.github.io/apk-server/remote-preinstall.jar`
 
 ## Supported payloads
@@ -42,10 +44,18 @@ Generated manifest entries contain the actual APK metadata, SHA-256 and size:
   "format": "splitZip",
   "forceInstall": false,
   "url": "https://daivietpda.github.io/apk-server/apk/ExampleTV.zip",
+  "urls": [
+    "https://apk.daivietpda.com/apk/ExampleTV.zip",
+    "https://daivietpda.github.io/apk-server/apk/ExampleTV.zip"
+  ],
   "sha256": "...",
   "size": 12345678
 }
 ```
+
+Backward compatibility is intentional: old ROMs continue reading the unchanged `url` field and use GitHub Pages. Updated ROMs try each address in `urls` in order and fall back to `url` when `urls` is absent. Do not remove or repurpose `url` while old clients remain deployed.
+
+The Cloudflare hostname must expose the same manifest and `/apk/` object paths. Large APK/ZIP objects should be stored in Cloudflare R2 behind the custom hostname; do not use `r2.dev` as a production endpoint.
 
 At boot or on a manual PreinstallManager request, the ROM:
 

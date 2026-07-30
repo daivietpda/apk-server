@@ -6,8 +6,10 @@ Tài liệu tiếng Anh: [README.md](README.md).
 
 ## URL công khai
 
-- Manifest: `https://daivietpda.github.io/apk-server/manifest.json`
-- APK/Split ZIP: `https://daivietpda.github.io/apk-server/apk/<tên-file>`
+- Manifest tương thích cũ: `https://daivietpda.github.io/apk-server/manifest.json`
+- Manifest ưu tiên: `https://apk.daivietpda.com/manifest.json`
+- APK/Split ZIP tương thích cũ: `https://daivietpda.github.io/apk-server/apk/<tên-file>`
+- APK/Split ZIP ưu tiên: `https://apk.daivietpda.com/apk/<tên-file>`
 - DEX helper tải HTTPS: `https://daivietpda.github.io/apk-server/remote-preinstall.jar`
 
 ## Định dạng payload
@@ -42,10 +44,18 @@ Mỗi entry được sinh từ metadata thật, SHA-256 và kích thước paylo
   "format": "splitZip",
   "forceInstall": false,
   "url": "https://daivietpda.github.io/apk-server/apk/ExampleTV.zip",
+  "urls": [
+    "https://apk.daivietpda.com/apk/ExampleTV.zip",
+    "https://daivietpda.github.io/apk-server/apk/ExampleTV.zip"
+  ],
   "sha256": "...",
   "size": 12345678
 }
 ```
+
+Thiết kế giữ tương thích ngược: ROM cũ tiếp tục đọc trường `url` không đổi và tải từ GitHub Pages. ROM mới thử lần lượt các địa chỉ trong `urls`; nếu không có mảng này thì dùng `url`. Không xóa hoặc đổi ý nghĩa `url` khi còn thiết bị dùng client cũ.
+
+Hostname Cloudflare phải cung cấp cùng manifest và cùng đường dẫn object `/apk/`. APK/ZIP lớn nên đặt trong Cloudflare R2 sau custom domain; không dùng `r2.dev` làm endpoint production.
 
 Khi boot hoặc khi PreinstallManager yêu cầu chạy thủ công, ROM sẽ:
 

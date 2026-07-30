@@ -8,13 +8,19 @@ import javax.net.ssl.HttpsURLConnection;
 
 /** Minimal HTTPS downloader used by the removable-preinstall init service. */
 public final class RemoteFetch {
-    private static final String ALLOWED_HOST = "daivietpda.github.io";
+    private static final String GITHUB_HOST = "daivietpda.github.io";
+    private static final String CLOUDFLARE_HOST = "apk.daivietpda.com";
     private static final int MAX_REDIRECTS = 5;
+
+    private static boolean isAllowedHost(String host) {
+        return GITHUB_HOST.equalsIgnoreCase(host)
+                || CLOUDFLARE_HOST.equalsIgnoreCase(host);
+    }
 
     private static URL validateUrl(String value) throws Exception {
         URI uri = new URI(value);
         if (!"https".equalsIgnoreCase(uri.getScheme())
-                || !ALLOWED_HOST.equalsIgnoreCase(uri.getHost())) {
+                || !isAllowedHost(uri.getHost())) {
             throw new SecurityException("URL is outside HTTPS allowlist: " + value);
         }
         return uri.toURL();
