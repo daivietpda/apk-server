@@ -165,3 +165,53 @@ manifest-policy.json       forceInstall policy
 uninstall-policy.json      uninstall policy
 manifest.json              generated public manifest
 ```
+
+## Cloudflare R2 mirror
+
+The two domains have deliberately separate roles:
+
+- `https://daivietpda.github.io/apk-server/` remains the canonical source for old ROMs. GitHub Pages must not have a custom domain or a `CNAME` file.
+- `https://apk.daivietpda.com/` is served by `cloudflare/worker.mjs`. The Worker reads the same paths from the private R2 bucket named `apk-server`.
+
+This separation prevents a GitHub Pages custom-domain redirect from sending an old `RemoteFetch` build to a hostname outside its HTTPS allowlist. The manifest keeps its legacy `url` on GitHub and adds the Cloudflare-first `urls` array for updated clients.
+
+### One-time Cloudflare setup
+
+1. Create an R2 bucket named exactly `apk-server`:
+
+   ```bash
+   npx wrangler@4 r2 bucket create apk-server
+   ```
+
+2. In Cloudflare DNS, delete the existing `apk` CNAME/AAAA/A record before the first Worker deployment. `wrangler.toml` declares `apk.daivietpda.com` as a Worker Custom Domain, so Cloudflare creates and owns the required DNS record and certificate. Do not point this hostname back to GitHub Pages.
+
+3. Create a scoped Cloudflare API token limited to this account/zone. It needs permission to edit Workers scripts and R2, plus the zone permissions required to create the Worker custom domain/DNS record.
+
+4. Add these GitHub repository secrets:
+
+   ```text
+   CLOUDFLARE_ACCOUNT_ID
+   CLOUDFLARE_API_TOKEN
+   ```
+
+The regular workflow remains successful when those secrets are absent: GitHub Pages is still deployed and the Cloudflare job reports that it was skipped.
+
+### Automatic publishing
+
+Every successful workflow:
+
+- regenerates one `manifest.json`;
+- builds `remote-preinstall.jar`;
+- deploys the legacy copy to GitHub Pages;
+- uploads the manifest, helper, APKs and Split APK ZIPs to R2;
+- deploys the read-only Worker custom domain.
+
+The Worker only accepts `GET` and `HEAD` for:
+
+```text
+/manifest.json
+/remote-preinstall.jar
+/apk/<one .apk or .zip filename>
+```
+
+It rejects directory traversal and directory listing, sets explicit content/cache headers, and supports one HTTP byte range so large downloads can resume. R2 objects no longer referenced by the manifest are intentionally not deleted automatically; this avoids destructive cleanup during a faulty manifest build. They may be removed manually after verifying that no deployed client still references them.
