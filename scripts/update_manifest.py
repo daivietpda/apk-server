@@ -16,7 +16,6 @@ POLICY_PATH = ROOT / "manifest-policy.json"
 UNINSTALL_POLICY_PATH = ROOT / "uninstall-policy.json"
 MANIFEST_PATH = ROOT / "manifest.json"
 DEFAULT_BASE_URL = "https://daivietpda.github.io/apk-server/apk"
-DEFAULT_MIRROR_BASE_URLS = ("https://apk.daivietpda.com/apk",)
 PACKAGE_RE = re.compile(r"^[A-Za-z0-9._]+$")
 BADGING_RE = re.compile(
     r"^package: name='([^']+)' versionCode='([0-9]+)'", re.MULTILINE
@@ -125,12 +124,6 @@ def atomic_json(path, value):
 def main():
     parser = argparse.ArgumentParser(description="Generate remote APK manifest")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
-    parser.add_argument(
-        "--mirror-base-url",
-        action="append",
-        dest="mirror_base_urls",
-        help="Preferred payload mirror base URL; may be supplied more than once",
-    )
     parser.add_argument("--set-apk", help="APK filename whose policy will be changed")
     parser.add_argument("--package-name", default="")
     parser.add_argument("--force-install", choices=("true", "false"))
@@ -181,12 +174,6 @@ def main():
     normalized_policies = []
     packages = []
     base_url = args.base_url.rstrip("/")
-    mirror_base_urls = (
-        args.mirror_base_urls
-        if args.mirror_base_urls is not None
-        else list(DEFAULT_MIRROR_BASE_URLS)
-    )
-    mirror_base_urls = [item.rstrip("/") for item in mirror_base_urls]
     for apk in apk_files:
         policy = policies.get(apk.name, {"packageName": "", "forceInstall": False})
         package_format, package_name, version_code = package_metadata(args.aapt2, apk)
@@ -202,24 +189,13 @@ def main():
             "packageName": package_name if force_install else "",
             "forceInstall": force_install,
         })
-        legacy_url = f"{base_url}/{quote(apk.name)}"
-        urls = []
-        for mirror_base_url in mirror_base_urls:
-            candidate = f"{mirror_base_url}/{quote(apk.name)}"
-            if candidate not in urls:
-                urls.append(candidate)
-        if legacy_url not in urls:
-            urls.append(legacy_url)
         packages.append({
             "name": apk.stem,
             "packageName": package_name,
             "versionCode": version_code,
             "format": package_format,
             "forceInstall": force_install,
-            # Keep the original GitHub URL for old ROM clients. New clients use
-            # urls in order and automatically fall back to this legacy URL.
-            "url": legacy_url,
-            "urls": urls,
+            "url": f"{base_url}/{quote(apk.name)}",
             "sha256": sha256(apk),
             "size": apk.stat().st_size,
         })

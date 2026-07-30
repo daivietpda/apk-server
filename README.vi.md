@@ -6,10 +6,8 @@ Tài liệu tiếng Anh: [README.md](README.md).
 
 ## URL công khai
 
-- Manifest tương thích cũ: `https://daivietpda.github.io/apk-server/manifest.json`
-- Manifest ưu tiên: `https://apk.daivietpda.com/manifest.json`
-- APK/Split ZIP tương thích cũ: `https://daivietpda.github.io/apk-server/apk/<tên-file>`
-- APK/Split ZIP ưu tiên: `https://apk.daivietpda.com/apk/<tên-file>`
+- Manifest: `https://daivietpda.github.io/apk-server/manifest.json`
+- APK/Split ZIP: `https://daivietpda.github.io/apk-server/apk/<tên-file>`
 - DEX helper tải HTTPS: `https://daivietpda.github.io/apk-server/remote-preinstall.jar`
 
 ## Định dạng payload
@@ -44,18 +42,10 @@ Mỗi entry được sinh từ metadata thật, SHA-256 và kích thước paylo
   "format": "splitZip",
   "forceInstall": false,
   "url": "https://daivietpda.github.io/apk-server/apk/ExampleTV.zip",
-  "urls": [
-    "https://apk.daivietpda.com/apk/ExampleTV.zip",
-    "https://daivietpda.github.io/apk-server/apk/ExampleTV.zip"
-  ],
   "sha256": "...",
   "size": 12345678
 }
 ```
-
-Thiết kế giữ tương thích ngược: ROM cũ tiếp tục đọc trường `url` không đổi và tải từ GitHub Pages. ROM mới thử lần lượt các địa chỉ trong `urls`; nếu không có mảng này thì dùng `url`. Không xóa hoặc đổi ý nghĩa `url` khi còn thiết bị dùng client cũ.
-
-Hostname Cloudflare phải cung cấp cùng manifest và cùng đường dẫn object `/apk/`. APK/ZIP lớn nên đặt trong Cloudflare R2 sau custom domain; không dùng `r2.dev` làm endpoint production.
 
 Khi boot hoặc khi PreinstallManager yêu cầu chạy thủ công, ROM sẽ:
 
@@ -165,53 +155,3 @@ manifest-policy.json       Chính sách forceInstall
 uninstall-policy.json      Chính sách gỡ package
 manifest.json              Manifest công khai được sinh tự động
 ```
-
-## Mirror Cloudflare R2
-
-Hai domain được tách vai trò có chủ ý:
-
-- `https://daivietpda.github.io/apk-server/` là nguồn chuẩn dành cho ROM cũ. GitHub Pages không được cấu hình custom domain và repo không được có file `CNAME`.
-- `https://apk.daivietpda.com/` do `cloudflare/worker.mjs` phục vụ. Worker đọc cùng cây đường dẫn từ bucket R2 private có tên `apk-server`.
-
-Cách tách này ngăn GitHub Pages redirect ROM cũ sang hostname nằm ngoài HTTPS allowlist của bản `RemoteFetch` cũ. Manifest vẫn giữ `url` cũ trên GitHub và thêm mảng `urls` ưu tiên Cloudflare cho client mới.
-
-### Thiết lập Cloudflare một lần
-
-1. Tạo bucket R2 đúng tên `apk-server`:
-
-   ```bash
-   npx wrangler@4 r2 bucket create apk-server
-   ```
-
-2. Trong Cloudflare DNS, xóa record CNAME/AAAA/A hiện có của host `apk` trước lần deploy Worker đầu tiên. `wrangler.toml` khai báo `apk.daivietpda.com` là Worker Custom Domain, vì vậy Cloudflare tự tạo và quản lý DNS record cùng chứng chỉ. Không trỏ hostname này về GitHub Pages.
-
-3. Tạo Cloudflare API token giới hạn cho đúng account/zone. Token cần quyền sửa Workers script và R2, cùng các quyền zone cần thiết để tạo Worker custom domain/DNS record.
-
-4. Thêm hai GitHub repository secrets:
-
-   ```text
-   CLOUDFLARE_ACCOUNT_ID
-   CLOUDFLARE_API_TOKEN
-   ```
-
-Nếu chưa có hai secrets, workflow bình thường vẫn thành công: GitHub Pages vẫn được deploy và job Cloudflare chỉ thông báo đã bỏ qua.
-
-### Publish tự động
-
-Mỗi workflow thành công sẽ:
-
-- sinh một `manifest.json` duy nhất;
-- build `remote-preinstall.jar`;
-- deploy bản tương thích cũ lên GitHub Pages;
-- upload manifest, helper, APK và Split APK ZIP lên R2;
-- deploy read-only Worker cho custom domain.
-
-Worker chỉ chấp nhận `GET` và `HEAD` cho:
-
-```text
-/manifest.json
-/remote-preinstall.jar
-/apk/<một tên file .apk hoặc .zip>
-```
-
-Worker chặn directory traversal và directory listing, đặt content/cache header rõ ràng, đồng thời hỗ trợ một HTTP byte range để tiếp tục tải file lớn. Object R2 không còn trong manifest không bị tự động xóa; điều này tránh mất dữ liệu do một lần build manifest sai. Chỉ xóa thủ công sau khi chắc chắn không còn client đã phát hành tham chiếu object đó.

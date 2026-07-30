@@ -10,8 +10,6 @@ on:
       - "scripts/**"
       - "tools/**"
       - ".github/workflows/publish.yml"
-      - "cloudflare/**"
-      - "wrangler.toml"
   workflow_dispatch:
     inputs:
       apk_file:
@@ -108,13 +106,7 @@ jobs:
           UNINSTALL_KEEP_DATA="${UNINSTALL_KEEP_DATA:-false}"
           UNINSTALL_USER_ID="${UNINSTALL_USER_ID:-0}"
 
-          # Keep --base-url as the legacy URL consumed by old ROMs. New ROMs
-          # prefer the Cloudflare mirror emitted in each package's urls array.
-          args=(
-            --base-url "https://daivietpda.github.io/apk-server/apk"
-            --mirror-base-url "https://apk.daivietpda.com/apk"
-            --aapt2 "$AAPT2"
-          )
+          args=(--base-url "https://daivietpda.github.io/apk-server/apk" --aapt2 "$AAPT2")
           if [[ "$FORCE_INSTALL" != "unchanged" ]]; then
             if [[ -z "$APK_FILE" ]]; then
               echo "apk_file is required when force_install is true or false" >&2
@@ -156,16 +148,6 @@ jobs:
             -exec cp '{}' public/apk/ \;
           touch public/.nojekyll
 
-      - name: Test Cloudflare Worker
-        run: node --test cloudflare/worker.test.mjs
-
-      - name: Upload Cloudflare content artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: r2-content
-          path: public
-          retention-days: 1
-
       - name: Commit generated policy and manifest
         shell: bash
         run: |
@@ -186,61 +168,6 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
-
-  cloudflare:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: r2-content
-          path: public
-
-      - name: Cloudflare deployment is not configured
-        if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
-        run: echo "Skipping R2/Worker deployment; add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
-
-      - name: Upload manifest and Android helper to R2
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
-        shell: bash
-        run: |
-          npx --yes wrangler@4 r2 object put "apk-server/manifest.json" \
-            --remote \
-            --file "public/manifest.json" \
-            --content-type "application/json; charset=utf-8" \
-            --cache-control "no-cache, no-store, must-revalidate"
-          npx --yes wrangler@4 r2 object put "apk-server/remote-preinstall.jar" \
-            --remote \
-            --file "public/remote-preinstall.jar" \
-            --content-type "application/java-archive" \
-            --cache-control "public, max-age=300, must-revalidate"
-
-      - name: Upload APK and Split APK ZIP payloads to R2
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
-        shell: bash
-        run: |
-          while IFS= read -r -d '' file; do
-            name=$(basename "$file")
-            case "${name,,}" in
-              *.apk) content_type="application/vnd.android.package-archive" ;;
-              *.zip) content_type="application/zip" ;;
-              *) echo "Unsupported payload: $name" >&2; exit 2 ;;
-            esac
-            npx --yes wrangler@4 r2 object put "apk-server/apk/$name" \
-              --remote \
-              --file "$file" \
-              --content-type "$content_type" \
-              --cache-control "public, max-age=300, must-revalidate"
-          done < <(find public/apk -maxdepth 1 -type f \( -iname '*.apk' -o -iname '*.zip' \) -print0)
-
-      - name: Deploy Cloudflare Worker custom domain
-        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
-        run: npx --yes wrangler@4 deploy
 
   deploy:
     needs: build
