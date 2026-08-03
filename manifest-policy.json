@@ -22,6 +22,11 @@
       "forceInstall": false
     },
     {
+      "file": "LeanKeyKeyboardPro.apk",
+      "packageName": "",
+      "forceInstall": false
+    },
+    {
       "file": "smarttube_stable.apk",
       "packageName": "",
       "forceInstall": false
