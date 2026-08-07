@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-03T04:00:59.092499Z",
+  "generatedAt": "2026-08-07T16:01:56.479630Z",
   "version": 2,
   "packages": [
     {
@@ -15,12 +15,12 @@
     {
       "name": "cobalt",
       "packageName": "com.google.android.youtube.tv",
-      "versionCode": 103,
+      "versionCode": 104,
       "format": "apk",
       "forceInstall": false,
       "url": "https://daivietpda.github.io/apk-server/apk/cobalt.apk",
-      "sha256": "cadfa2a1ce454f1957d9e5bbc72c7ad41e8f3773a0b5546633d8f5dd121f9acf",
-      "size": 15338404
+      "sha256": "78d77853cf7801636f94e9545af9efe422b01fea6727fc40cbb952af78f1fbd7",
+      "size": 15337998
     },
     {
       "name": "downloader",
